@@ -1,11 +1,18 @@
 package com.pqt03.projectspring.domain;
 
+import java.util.List;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "users")
 public class User {
 
     @Id
@@ -17,16 +24,27 @@ public class User {
     private String address;
     private String phone;
 
+    public String avatar;
+
+    // User many -> to one -> role
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
+
+    @OneToMany(mappedBy = "user")
+    List<Order> orders;
+
     public User() {
     }
 
-    public User(long id, String phone, String address, String fullName, String email, String password) {
+    public User(long id, String phone, String address, String fullName, String email, String password, String avatar) {
         this.id = id;
         this.phone = phone;
         address = address;
         this.fullName = fullName;
         this.email = email;
         this.password = password;
+        this.avatar = avatar;
     }
 
     public long getId() {
@@ -77,6 +95,14 @@ public class User {
         this.password = password;
     }
 
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
     @Override
     public String toString() {
         return "User{"
@@ -86,6 +112,7 @@ public class User {
                 + ", fullName='" + fullName + '\''
                 + ", Address='" + address + '\''
                 + ", phone='" + phone + '\''
+                + ", avatar='" + avatar + '\''
                 + '}';
     }
 }
