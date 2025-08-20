@@ -15,36 +15,34 @@ public class UploadService {
     private final ServletContext servletContext;
 
     public UploadService(ServletContext servletContext) {
-
         this.servletContext = servletContext;
-
     }
 
     public String handleSaveUploadFile(MultipartFile file, String targetFolder) {
+        if (file.isEmpty()) {
+            return "";
+        }
 
-        String rootPath = this.servletContext.getRealPath("/resources/image");
-        String finalName = "";
+        String uploadPath = servletContext.getRealPath("/resources/image/" + targetFolder);
+        String fileName = System.currentTimeMillis() + "-" + file.getOriginalFilename();
+
         try {
-            byte[] bytes = file.getBytes();
-
-            File dir = new File(rootPath + File.separator + targetFolder);
+            File dir = new File(uploadPath);
             if (!dir.exists()) {
                 dir.mkdirs();
             }
-            // Create the file on server
-            finalName = dir.getAbsolutePath() + File.separator
-                    + +System.currentTimeMillis() + "-" + file.getOriginalFilename();
 
-            File serverFile = new File(finalName);
-
-            BufferedOutputStream stream = new BufferedOutputStream(
-                    new FileOutputStream(serverFile));
-            stream.write(bytes);
-            stream.close();
+            File serverFile = new File(dir, fileName);
+            try (BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(serverFile))) {
+                stream.write(file.getBytes());
+            }
         } catch (Exception e) {
             e.printStackTrace();
-
+            return "";
         }
-        return finalName;
+
+        // Chỉ trả về tên file để lưu DB
+        return fileName;
     }
+
 }

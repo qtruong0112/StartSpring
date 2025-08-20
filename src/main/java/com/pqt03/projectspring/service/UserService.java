@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.pqt03.projectspring.domain.Role;
 import com.pqt03.projectspring.domain.User;
+import com.pqt03.projectspring.domain.DTO.RegisterDTO;
 import com.pqt03.projectspring.repository.RoleRepository;
 import com.pqt03.projectspring.repository.UserRepository;
 
@@ -14,7 +15,6 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-
 
     public UserService(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
@@ -38,10 +38,6 @@ public class UserService {
         return this.userRepository.findAll();
     }
 
-    public List<User> getAllUserByEmail(String email) {
-        return this.userRepository.findByEmail(email);
-    }
-
     public User getUserById(long id) {
         return this.userRepository.findById(id);
     }
@@ -50,7 +46,25 @@ public class UserService {
         this.userRepository.deleteById(id);
     }
 
-    public Role getRoleByName(String name){
+    public Role getRoleByName(String name) {
         return this.roleRepository.findByName(name);
     }
+
+    public User RegisterDTOtoUser(RegisterDTO registerDTO) {
+        User user = new User();
+        user.setFullName(registerDTO.getFirstName() + " " + registerDTO.getLastName());
+        user.setEmail(registerDTO.getEmail());
+        user.setPassword(registerDTO.getPassword());
+        return user;
+    }
+
+    public boolean checkEmailExsit(String email) {
+        return this.userRepository.existsByEmail(email);
+    }
+
+    public User getUserByEmail(String email) {
+        return this.userRepository.findByEmail(email);
+    }
+
+    
 }
